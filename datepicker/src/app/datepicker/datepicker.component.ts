@@ -56,8 +56,21 @@ export class DatepickerComponent implements OnInit {
     for(let i = 0; i < arrayLength; i++){
       let obj: any = {};
       if(i < initialEmptyCells || i > initialEmptyCells + daysInMonth -1){
-        obj.value = 0;
+        
+        var day;
         obj.available = false;
+
+        if(i < initialEmptyCells){
+          day = firstDayDate.clone();
+          day = day.subtract(6-i, 'days');
+          console.log(day);
+        }else{
+          day = lastDayDate.add(1, 'days');
+          console.log(day);
+        }
+        
+        
+        obj.value = day.format('DD');
       } else {
         obj.value = i - initialEmptyCells +1;
         obj.available = this.isAvailable(i - initialEmptyCells +1);
@@ -67,12 +80,14 @@ export class DatepickerComponent implements OnInit {
   }
 
   isAvailable(num: number): boolean{
+        
     let dateToCheck = this.dateFromNum(num, this.navDate);
-    if(dateToCheck.isBefore(moment(), 'day')){
-        return false;
-    } else {
-        return true;
+
+    //Weekend
+    if(dateToCheck.weekday() > 4){
+      return false;
     }
+    return true;
   }
 
   dateFromNum(num: number, referenceDate: any): any{
