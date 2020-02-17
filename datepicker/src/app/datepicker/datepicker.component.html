@@ -1,15 +1,15 @@
 <div class="calendar">
     <div class="calendar-nav">
         <div class="calendar-nav-previous-month">
-            <button class="button is-text">
-            <i class="fa fa-chevron-left"></i>
-        </button>
+            <button class="button is-text" (click)="changeViewDate(-1, 'month')">
+            <i class="fa fa-chevron-left" ></i>
+          </button>
         </div>
-        <div>March 2017</div>
+        <div>{{viewDate.format('MMMM YYYY')}}</div>
         <div class="calendar-nav-next-month">
-            <button class="button is-text">
-          <i class="fa fa-chevron-right"></i>
-        </button>
+            <button class="button is-text" (click)="changeViewDate(1, 'month')">
+            <i class="fa fa-chevron-right" ></i>
+          </button>
         </div>
     </div>
 

@@ -1,0 +1,110 @@
+$theme-color: #00d1b2;
+$theme-color-light: rgba($theme-color, 0.5);
+$theme-color-dark: darken($theme-color, 20%);
+$theme-text-color: #fff;
+$text: #717171;
+$text-disabled: #b5b5b5;
+.calendar {
+    display: block;
+    background: $theme-text-color;
+    border-radius: 2px;
+    max-width: 320px;
+    z-index: 1;
+    box-shadow: 0 2px 3px rgba(10, 10, 10, .1), 0 0 0 1px rgba(10, 10, 10, .1);
+    .calendar-nav {
+        background: $theme-color;
+        color: $theme-text-color;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: .5em;
+        flex-direction: row;
+    }
+    .calendar-container {
+        .calendar-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: .3rem 0;
+            background: 0 0;
+            color: $theme-text-color;
+            font-size: .75rem;
+            .calendar-date {
+                background: 0 0 !important;
+                color: $text-disabled;
+                padding: .3rem;
+            }
+        }
+        .calendar-body {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 0;
+            color: $text;
+            .calendar-date {
+                display: flex;
+                justify-content: center;
+                flex: 14.28571%;
+                margin: .1rem 0;
+                align-items: center;
+                &.is-disabled {
+                    color: $text-disabled;
+                    text-decoration: line-through;
+                    button {
+                        color: $text-disabled;
+                    }
+                }
+                button {
+                    margin: 0 auto;
+                    appearance: none;
+                    background: 0 0;
+                    border: none;
+                    border-radius: 25091983px;
+                    cursor: pointer;
+                    height: 2.2rem;
+                    outline: 0;
+                    padding: 0;
+                    position: relative;
+                    text-align: center;
+                    text-decoration: none;
+                    transition: all .2s ease;
+                    vertical-align: middle;
+                    white-space: nowrap;
+                    width: 2.2rem;
+                    -webkit-animation: bounce-button-in .45s 0s cubic-bezier(.175, .885, .32, 1.275) forwards;
+                    animation: bounce-button-in .45s 0s cubic-bezier(.175, .885, .32, 1.275) forwards;
+                    &:hover {
+                        background: $theme-text-color;
+                        border: .1rem solid $theme-color;
+                        color: rgba(0, 0, 0, .7);
+                        text-decoration: none;
+                    }
+                    &.is-active {
+                        border: .1rem solid $theme-color;
+                        background-color: $theme-color;
+                        color: $theme-text-color;
+                    }
+                }
+                &.calendar-range {
+                    background-color: $theme-color-light;
+                    button {
+                        color: $theme-color-dark;
+                    }
+                }
+                &.calendar-range-start {
+                    background: linear-gradient(90deg, transparent 50%, $theme-color-light 50%);
+                    button {
+                        color: $theme-text-color;
+                    }
+                }
+                &.calendar-range-end {
+                    background: linear-gradient(90deg, $theme-color-light 50%, transparent 50%);
+                    button {
+                        color: $theme-text-color;
+                    }
+                }
+            }
+        }
+    }
+}
