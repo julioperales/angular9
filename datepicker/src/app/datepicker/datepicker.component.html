@@ -1,28 +1,24 @@
 <div class="calendar">
     <div class="calendar-nav">
         <div class="calendar-nav-previous-month">
-            <button class="button is-text" (click)="changeViewDate(-1, 'month')">
-            <i class="fa fa-chevron-left" ></i>
-          </button>
+            <button class="button is-text" (click)="changeNavMonth(-1)" [disabled]="!canChangeNavMonth(-1)">
+              <i class="fa fa-chevron-left" ></i>
+            </button>
         </div>
-        <div>{{viewDate.format('MMMM YYYY')}}</div>
+        <div>{{navDate.format('MMMM YYYY')|titlecase}}</div>
         <div class="calendar-nav-next-month">
-            <button class="button is-text" (click)="changeViewDate(1, 'month')">
-            <i class="fa fa-chevron-right" ></i>
-          </button>
+            <button class="button is-text" (click)="changeNavMonth(1)" [disabled]="!canChangeNavMonth(1)">
+              <i class="fa fa-chevron-right" ></i>
+            </button>
         </div>
     </div>
 
 
     <div class="calendar-container">
         <div class="calendar-header">
-            <div class="calendar-date">Sun</div>
-            <div class="calendar-date">Mon</div>
-            <div class="calendar-date">Tue</div>
-            <div class="calendar-date">Wed</div>
-            <div class="calendar-date">Thu</div>
-            <div class="calendar-date">Fri</div>
-            <div class="calendar-date">Sat</div>
+            <div class="calendar-date" *ngFor="let day of weekDaysHeaderArr">
+                {{day|titlecase}}
+            </div>
         </div>
 
 

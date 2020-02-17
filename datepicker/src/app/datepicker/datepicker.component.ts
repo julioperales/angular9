@@ -10,29 +10,40 @@ export class DatepickerComponent implements OnInit {
 
 
 
-  localeString: string = 'en';
-  viewDate: any;
+  localeString: string = 'es';
+  navDate: any;
+  weekDaysHeaderArr: Array<string> = [];
 
-  constructor() { }
+    constructor() {
+        
+     }
 
   ngOnInit(): void {
-    moment.locale(this.localeString);
-    this.viewDate = moment();
+    moment.locale(this.localeString);              
+    this.navDate = moment();
+
+    this.makeHeader();
+    
   }
 
-  changeViewDate(num, datePart){
-    if(this.canChange(this.viewDate, num, datePart)){
-      this.viewDate.add(num, datePart);
+  changeNavMonth(num: number){
+    if(this.canChangeNavMonth(num)){
+      this.navDate.add(num, 'month');
     }
   }
 
-  canChange(dateToCheck, num, datePart){
-    const clonedDate = moment(dateToCheck);
-    clonedDate.add(num, datePart);
+  canChangeNavMonth(num: number){
+    const clonedDate = moment(this.navDate);
+    clonedDate.add(num, 'month');
     const minDate = moment().add(-1, 'month');
     const maxDate = moment().add(1, 'year');
 
     return clonedDate.isBetween(minDate, maxDate);
+  }
+
+  makeHeader(){
+    const weekDaysArr: Array<number> = [0, 1, 2, 3, 4, 5, 6];
+    weekDaysArr.forEach(day => this.weekDaysHeaderArr.push(moment().weekday(day).format('ddd')));
   }
 
 }
