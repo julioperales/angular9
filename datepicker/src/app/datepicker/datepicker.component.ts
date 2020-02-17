@@ -15,6 +15,7 @@ export class DatepickerComponent implements OnInit {
   weekDaysHeaderArr: Array<string> = [];
   gridArr: Array<any> = [];
   selectedDate: any;
+  range: Array<any> = [];
 
     constructor() {
         
@@ -98,6 +99,21 @@ export class DatepickerComponent implements OnInit {
   selectDay(day: any){
     if(day.available){
       this.selectedDate = this.dateFromNum(day.value, this.navDate);
+
+      if(this.range.length > 1){
+          this.range = new Array();
+          this.range.push(this.selectedDate);          
+      }else{
+        this.range.push(this.selectedDate);
+
+        if(this.range.length == 2){          
+          if(this.range[0].isAfter(this.selectedDate)){
+            this.range.reverse();
+          }
+        }
+      }
+      console.log(this.range);
+      
     }
   }
 
