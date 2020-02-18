@@ -1,11 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
+
 @Component({
   selector: 'app-datepicker',
   templateUrl: './datepicker.component.html',
   styleUrls: ['./datepicker.component.scss']
 })
+
 export class DatepickerComponent implements OnInit {
+
+  /* GLOBAL */
   localeString: string = 'es';
   navDate: any;
   weekDaysHeaderArr: Array<string> = [];
@@ -13,19 +17,19 @@ export class DatepickerComponent implements OnInit {
   selectedDate: any;
   range: Array<any> = [];
 
-  conf: any;
+  /* CONFIG */
+  conf = {
+    'localeString': 'es',
+    'showItems': 3,
+    'showSlides': false
+  };
 
   constructor() {
       
   }
 
-  ngOnInit(): void {
-
-    
-
-    moment.locale(this.localeString);              
-    
-
+  ngOnInit(): void {  
+    moment.locale(this.conf.localeString);                  
     this.navDate = moment();
     this.weekDaysHeaderArr = moment.weekdays(true);    
     this.makeGrid();    
@@ -59,48 +63,61 @@ export class DatepickerComponent implements OnInit {
 
   makeGrid(){
     this.gridArr = [];
+    
 
-    const firstDayDate = moment(this.navDate).startOf('month');
-    const initialEmptyCells = firstDayDate.weekday();
-    const lastDayDate = moment(this.navDate).endOf('month');
-    const lastEmptyCells = 6 - lastDayDate.weekday();
-    const daysInMonth = this.navDate.daysInMonth();
-    const arrayLength = initialEmptyCells + lastEmptyCells + daysInMonth;
+    for(let j = 0; j< this.conf.showItems; j++){
+      let auxDate = moment(this.navDate);
+      auxDate.add(j, 'months');
+      
 
-    /* Calendar & weekends */
-    for(let i = 0; i < arrayLength; i++){
-      let obj: any = {};
-      let day;
+      let firstDayDate = moment(auxDate).startOf('month');
+      let initialEmptyCells = firstDayDate.weekday();
+      let lastDayDate = moment(auxDate).endOf('month');
+      let lastEmptyCells = 6 - lastDayDate.weekday();
+      let daysInMonth = auxDate.daysInMonth();
+      let arrayLength = initialEmptyCells + lastEmptyCells + daysInMonth;
+      
 
-      if(i < initialEmptyCells || i > initialEmptyCells + daysInMonth -1){              
-        obj.available = false;
-        if(i < initialEmptyCells){          
-          day = firstDayDate.clone();
-          day = day.subtract(6-i, 'days');          
-        }else{
-          day = lastDayDate.clone();
-          day = day.add(1, 'days');          
-        }                
-        obj.value = day.format('DD');
-        obj.date = day;
-      } else {
-        obj.value = i - initialEmptyCells +1;
-        obj.available = this.isAvailable(i - initialEmptyCells +1);
-        day = firstDayDate.clone();
+      this.gridArr[j] = [];
+      this.gridArr[j]['days'] = [];
 
-        obj.date = day.add( i - initialEmptyCells,'days');
+      /* Calendar & weekends */
+      for(let i = 0; i < arrayLength; i++){
+        let obj: any = {};
+        let day;
 
-      }      
+        if(i < initialEmptyCells || i > initialEmptyCells + daysInMonth -1){              
+          obj.available = false;
+          if(i < initialEmptyCells){          
+            day = firstDayDate.clone();            
+            day = day.subtract(initialEmptyCells-i, 'days');                  
             
-      this.isRange(obj);
-      this.gridArr.push(obj);
-    }
+          }else{
+            var aux = i - (initialEmptyCells + daysInMonth -1);
+            day = lastDayDate.clone();
+            day = day.add(aux, 'days');          
+            
+          } 
+          
+          obj.value = day.format('DD');
+          obj.date = day;
+          
+        } else {
+          obj.value = i - initialEmptyCells +1;                    
+          day = firstDayDate.clone();
+          obj.date = day.add( i - initialEmptyCells,'days');
+          obj.available = this.isAvailable(obj.date);
+        }      
+              
+        this.isRange(obj);
+        this.gridArr[j]['date'] = auxDate;
+        this.gridArr[j]['days'].push(obj);
+      }
+    }     
   }
 
-  isAvailable(num: number): boolean{
+  isAvailable(dateToCheck): boolean{
         
-    let dateToCheck = this.dateFromNum(num, this.navDate);
-
     //Weekend
     if(dateToCheck.weekday() > 4){
       return false;
@@ -108,29 +125,72 @@ export class DatepickerComponent implements OnInit {
     return true;
   }
 
-  isRange(obj){
-    
+  isRange(obj){    
+
     obj.isRangeStart = false;
     obj.isRangeEnd = false;
+    obj.isRange = false;
+
     
+    if(this.range.length > 1){
+      this.range = new Array();
+      this.range.push(this.selectedDate);  
+      
+    }
+
+    
+    /*
+    if(this.range.length > 1){
+      this.range = new Array();
+      this.range.push(this.selectedDate);  
+      
+    }else{
+      this.range.push(this.selectedDate);
+
+      if(this.range.length == 2){          
+        if(this.range[0].isAfter(this.selectedDate)){
+          this.range.reverse();
+        }
+      }
+    } 
+
+
+
+
+
+
+    /*
+
     if(this.range[0] && this.range[0].isSame(obj.date, 'day')){
       obj.isRangeStart = true;      
     }
+
+
+    for(let i = 0; i < this.gridArr.length; i++){
+      for(let j= 0; j< this.gridArr[i].length; j++){
+          console.log('aqui', this.gridArr[i][j]);
+      }
+    }
+
+
+    /*    
+    
 
     if(this.range[1] && this.range[1].isSame(obj.date, 'day')){
       obj.isRangeEnd = true;  
     }        
 
     for(let i = 0; i < this.gridArr.length; i++){
-      this.gridArr[i].isRange = false;     
 
-      if(this.range[1] && this.gridArr[i].date.isBetween(this.range[0], this.range[1])){
-        this.gridArr[i].isRange = true;        
+      for(let j= 0; j< this.gridArr[i]; j++){
+        this.gridArr[i][j].isRange = false;     
+
+        if(this.range[1] && this.gridArr[i][j].date.isBetween(this.range[0], this.range[1])){
+          this.gridArr[i][j].isRange = true;        
+        }
       }
-    }
-
-
-    //return obj;
+      
+    }*/
   }
 
   dateFromNum(num: number, referenceDate: any): any{
@@ -139,32 +199,8 @@ export class DatepickerComponent implements OnInit {
   }
 
   selectDay(day: any){
-    if(day.available){
-      this.selectedDate = this.dateFromNum(day.value, this.navDate);
-      
-      if(this.range.length > 1){
-          
-          for(let i = 0; i < this.gridArr.length; i++){
-            this.gridArr[i].isRangeStart = false;
-            this.gridArr[i].isRangeEnd = false;
-          }
-
-
-          this.range = new Array();
-          this.range.push(this.selectedDate);          
-      }else{
-        this.range.push(this.selectedDate);
-
-        if(this.range.length == 2){          
-          if(this.range[0].isAfter(this.selectedDate)){
-            this.range.reverse();
-          }
-        }
-      }
+    if(day.available){                   
       this.isRange(day);
-
-      
-      
     }
   }
 }

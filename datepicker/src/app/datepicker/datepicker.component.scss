@@ -24,6 +24,18 @@ $text-disabled: #b5b5b5;
         font-size: .75rem;
     }
 }
+
+.calendar-wrapper{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;    
+
+    .calendar{
+        margin-bottom: 40px;
+    }
+}
+
 .calendar {
     display: block;
     background: $theme-text-color;
@@ -31,12 +43,14 @@ $text-disabled: #b5b5b5;
     max-width: 320px;
     z-index: 1;
     box-shadow: 0 2px 3px rgba(10, 10, 10, .1), 0 0 0 1px rgba(10, 10, 10, .1);
+
+
     .calendar-nav {
         background: $theme-color;
         color: $theme-text-color;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: space-around;
         padding: .5em;
         flex-direction: row;
 
@@ -78,11 +92,14 @@ $text-disabled: #b5b5b5;
             background: 0 0;
             color: $theme-text-color;
             font-size: .75rem;
+            flex-direction: row;
             .calendar-date {
                 background: 0 0 !important;
                 color: $text-disabled;
                 padding: .3rem;
             }
+
+            
         }
         .calendar-body {
             display: flex;
