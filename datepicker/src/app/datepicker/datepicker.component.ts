@@ -75,7 +75,7 @@ export class DatepickerComponent implements OnInit {
 
       }      
             
-      obj = this.isRange(obj);
+      this.isRange(obj);
       this.gridArr.push(obj);
     }
   }
@@ -95,7 +95,7 @@ export class DatepickerComponent implements OnInit {
     
     obj.isRangeStart = false;
     obj.isRangeEnd = false;
-
+    
     if(this.range[0] && this.range[0].isSame(obj.date, 'day')){
       obj.isRangeStart = true;      
     }
@@ -103,7 +103,17 @@ export class DatepickerComponent implements OnInit {
     if(this.range[1] && this.range[1].isSame(obj.date, 'day')){
       obj.isRangeEnd = true;  
     }        
-    return obj;
+
+    for(let i = 0; i < this.gridArr.length; i++){
+      this.gridArr[i].isRange = false;     
+
+      if(this.range[1] && this.gridArr[i].date.isBetween(this.range[0], this.range[1])){
+        this.gridArr[i].isRange = true;        
+      }
+    }
+
+
+    //return obj;
   }
 
   dateFromNum(num: number, referenceDate: any): any{
@@ -134,7 +144,7 @@ export class DatepickerComponent implements OnInit {
           }
         }
       }
-      day= this.isRange(day);
+      this.isRange(day);
 
       
       

@@ -88,29 +88,22 @@ $text-disabled: #b5b5b5;
                         color: $theme-text-color;
                     }
                 }
+                &.calendar-range {
+                    background-color: $theme-color-light;
+                    button {
+                        color: $theme-color-dark;
+                    }
+                }
                 &.calendar-range-start {
                     background: linear-gradient(90deg, transparent 50%, $theme-color-light 50%);
                     button {
                         color: $theme-text-color;
                     }
                 }
-                &.calendar-range-start~.calendar-date {
-                    background-color: $theme-color-light;
-                    button {
-                        color: $theme-color-dark;
-                    }
-                }
                 &.calendar-range-end {
-                    background-color: transparent!important;
                     background: linear-gradient(90deg, $theme-color-light 50%, transparent 50%);
                     button {
-                        color: $theme-text-color!important;
-                    }
-                }
-                &.calendar-range-end~.calendar-date {
-                    background-color: inherit;
-                    button {
-                        color: inherit;
+                        color: $theme-text-color;
                     }
                 }
             }

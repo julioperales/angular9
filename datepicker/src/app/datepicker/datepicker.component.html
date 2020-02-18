@@ -23,7 +23,8 @@
 
 
         <div class="calendar-body">
-            <div *ngFor="let day of gridArr" class="calendar-date" [class.is-disabled]="!day.available" [class.is-active]="day.isRangeStart || day.isRangeEnd" [class.calendar-range-start]="day.isRangeStart && range[1]" [class.calendar-range-end]="day.isRangeEnd">
+            <div *ngFor="let day of gridArr" class="calendar-date" [class.is-disabled]="!day.available" [class.is-active]="day.isRangeStart || day.isRangeEnd" [class.calendar-range-start]="day.isRangeStart && range[1]" [class.calendar-range-end]="day.isRangeEnd"
+                [class.calendar-range]="day.isRange">
 
                 <button *ngIf="day.value !== 0" class="date-item" (click)="selectDay(day)">{{day.value}}</button>
                 <button *ngIf="day.value === 0" class="date-item"></button>
