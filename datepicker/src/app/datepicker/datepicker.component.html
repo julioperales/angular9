@@ -30,6 +30,11 @@
                 <button *ngIf="day.value === 0" class="date-item"></button>
             </div>
         </div>
+
+        <div class="calendar-footer">
+            <button class="calendar-footer-today button is-small is-text" (click)="selectToday()">Today</button>
+            <button class="calendar-footer-clear button is-small is-text" (click)="clearDays()">Clear</button>            
+        </div>
     </div>
 
 </div>

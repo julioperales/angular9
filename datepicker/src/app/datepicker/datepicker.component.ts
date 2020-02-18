@@ -31,13 +31,21 @@ export class DatepickerComponent implements OnInit {
     this.makeGrid();    
   }
 
-  changeNavMonth(num: number){
+  selectToday(){
+    this.navDate = moment();
+    this.makeGrid();
+  }
 
-    
+  changeNavMonth(num: number){    
     if(this.canChangeNavMonth(num)){
       this.navDate.add(num, 'month');
       this.makeGrid();
     }
+  }
+
+  clearDays(){
+    this.range = new Array();
+    this.makeGrid();
   }
 
   canChangeNavMonth(num: number){

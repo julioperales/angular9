@@ -4,6 +4,26 @@ $theme-color-dark: darken($theme-color, 10%);
 $theme-text-color: #fff;
 $text: #717171;
 $text-disabled: #b5b5b5;
+
+.button{
+    justify-content: center;
+    padding-bottom: calc(0.375em - 1px);
+    padding-left: .75em;
+    padding-right: .75em;
+    padding-top: calc(0.375em - 1px);
+    text-align: center;
+    white-space: nowrap;
+
+    &.is-text{
+        background-color: transparent;
+        border-color: transparent;
+    }
+    &.is-small {
+        
+        border-radius: 2px;
+        font-size: .75rem;
+    }
+}
 .calendar {
     display: block;
     background: $theme-text-color;
@@ -135,6 +155,24 @@ $text-disabled: #b5b5b5;
                         color: $theme-text-color;
                     }
                 }
+            }
+        }
+
+        .calendar-footer{
+            display: flex;
+            flex: 1;
+            justify-content: space-evenly;
+            margin: 0;
+
+            .button{
+                cursor: pointer;
+            }
+
+            .calendar-footer-today{
+                color: orange;
+            }
+            .calendar-footer-clear{
+                color: red;
             }
         }
     }
