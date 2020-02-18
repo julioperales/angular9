@@ -19,6 +19,35 @@ $text-disabled: #b5b5b5;
         justify-content: space-between;
         padding: .5em;
         flex-direction: row;
+
+        button{
+            border: none;
+            background-color: transparent;
+
+            [class^="icon-"]{   
+                
+                &:before{
+                    font-size: 20px;
+                    color: $theme-text-color;
+                }
+                &:hover{
+                    opacity: 0.5;
+                }
+                
+            }
+
+            &:not(:disabled){
+                [class^="icon-"]{   
+                    cursor: pointer;
+
+                    &:hover{
+                        opacity: 1;
+                    }
+                }
+
+                
+            }
+        }
     }
     .calendar-container {
         .calendar-header {

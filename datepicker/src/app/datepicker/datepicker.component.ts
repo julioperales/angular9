@@ -13,18 +13,27 @@ export class DatepickerComponent implements OnInit {
   selectedDate: any;
   range: Array<any> = [];
 
+  conf: any;
+
   constructor() {
       
   }
 
   ngOnInit(): void {
+
+    
+
     moment.locale(this.localeString);              
+    
+
     this.navDate = moment();
     this.weekDaysHeaderArr = moment.weekdays(true);    
     this.makeGrid();    
   }
 
   changeNavMonth(num: number){
+
+    
     if(this.canChangeNavMonth(num)){
       this.navDate.add(num, 'month');
       this.makeGrid();
