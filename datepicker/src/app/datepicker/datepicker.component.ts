@@ -1,15 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
-
 @Component({
   selector: 'app-datepicker',
   templateUrl: './datepicker.component.html',
   styleUrls: ['./datepicker.component.scss']
 })
 export class DatepickerComponent implements OnInit {
-
-
-
   localeString: string = 'es';
   navDate: any;
   weekDaysHeaderArr: Array<string> = [];
@@ -17,15 +13,15 @@ export class DatepickerComponent implements OnInit {
   selectedDate: any;
   range: Array<any> = [];
 
-    constructor() {
-        
-     }
+  constructor() {
+      
+  }
 
   ngOnInit(): void {
     moment.locale(this.localeString);              
     this.navDate = moment();
     this.weekDaysHeaderArr = moment.weekdays(true);    
-    this.makeGrid();
+    this.makeGrid();    
   }
 
   changeNavMonth(num: number){
@@ -54,28 +50,32 @@ export class DatepickerComponent implements OnInit {
     const daysInMonth = this.navDate.daysInMonth();
     const arrayLength = initialEmptyCells + lastEmptyCells + daysInMonth;
 
+    /* Calendar & weekends */
     for(let i = 0; i < arrayLength; i++){
       let obj: any = {};
-      if(i < initialEmptyCells || i > initialEmptyCells + daysInMonth -1){
-        
-        var day;
-        obj.available = false;
+      let day;
 
-        if(i < initialEmptyCells){
+      if(i < initialEmptyCells || i > initialEmptyCells + daysInMonth -1){              
+        obj.available = false;
+        if(i < initialEmptyCells){          
           day = firstDayDate.clone();
-          day = day.subtract(6-i, 'days');
-          console.log(day);
+          day = day.subtract(6-i, 'days');          
         }else{
-          day = lastDayDate.add(1, 'days');
-          console.log(day);
-        }
-        
-        
+          day = lastDayDate.clone();
+          day = day.add(1, 'days');          
+        }                
         obj.value = day.format('DD');
+        obj.date = day;
       } else {
         obj.value = i - initialEmptyCells +1;
         obj.available = this.isAvailable(i - initialEmptyCells +1);
-      }
+        day = firstDayDate.clone();
+
+        obj.date = day.add( i - initialEmptyCells,'days');
+
+      }      
+            
+      obj = this.isRange(obj);
       this.gridArr.push(obj);
     }
   }
@@ -91,6 +91,21 @@ export class DatepickerComponent implements OnInit {
     return true;
   }
 
+  isRange(obj){
+    
+    obj.isRangeStart = false;
+    obj.isRangeEnd = false;
+
+    if(this.range[0] && this.range[0].isSame(obj.date, 'day')){
+      obj.isRangeStart = true;      
+    }
+
+    if(this.range[1] && this.range[1].isSame(obj.date, 'day')){
+      obj.isRangeEnd = true;  
+    }        
+    return obj;
+  }
+
   dateFromNum(num: number, referenceDate: any): any{
     let returnDate = moment(referenceDate);
     return returnDate.date(num);
@@ -99,8 +114,15 @@ export class DatepickerComponent implements OnInit {
   selectDay(day: any){
     if(day.available){
       this.selectedDate = this.dateFromNum(day.value, this.navDate);
-
+      
       if(this.range.length > 1){
+          
+          for(let i = 0; i < this.gridArr.length; i++){
+            this.gridArr[i].isRangeStart = false;
+            this.gridArr[i].isRangeEnd = false;
+          }
+
+
           this.range = new Array();
           this.range.push(this.selectedDate);          
       }else{
@@ -112,12 +134,10 @@ export class DatepickerComponent implements OnInit {
           }
         }
       }
-      console.log(this.range);
+      day= this.isRange(day);
+
+      
       
     }
   }
-
-
-
-
 }
