@@ -20,7 +20,7 @@ export class DatepickerComponent implements OnInit {
   /* CONFIG */
   conf = {
     'localeString': 'es',
-    'showItems': 3,
+    'showItems': 1,
     'showSlides': false
   };
 
@@ -108,8 +108,7 @@ export class DatepickerComponent implements OnInit {
           obj.date = day.add( i - initialEmptyCells,'days');
           obj.available = this.isAvailable(obj.date);
         }      
-              
-        this.isRange(obj);
+                      
         this.gridArr[j]['date'] = auxDate;
         this.gridArr[j]['days'].push(obj);
       }
@@ -125,45 +124,60 @@ export class DatepickerComponent implements OnInit {
     return true;
   }
 
-  isRange(obj){    
+  updateRange(){    
+    for(let i= 0; i< this.gridArr.length;  i++){       
 
+      for(let j= 0; j< this.gridArr[i].days.length; j++){
+
+        let obj = this.gridArr[i].days[j];
+        obj.isRangeStart = false;
+        obj.isRangeEnd = false;
+        obj.isRange = false;
+
+        if(this.range[0] && this.range[0].isSame(obj.date, 'day')){
+          obj.isRangeStart = true;      
+        }
+    
+        if(this.range[1] && this.range[1].isSame(obj.date, 'day')){
+          obj.isRangeEnd = true;  
+        }  
+
+        if(this.range[0] && this.range[1]){
+          if(obj.date.isBetween(this.range[0], this.range[1], 'days')){
+            obj.isRange = true;
+          }
+          
+        }
+      }
+    }
+  }
+
+  isRange(obj){    
     obj.isRangeStart = false;
     obj.isRangeEnd = false;
     obj.isRange = false;
-
     
+   
     if(this.range.length > 1){
       this.range = new Array();
-      this.range.push(this.selectedDate);  
-      
-    }
-
-    
-    /*
-    if(this.range.length > 1){
-      this.range = new Array();
-      this.range.push(this.selectedDate);  
+      this.range.push(obj.date);  
       
     }else{
-      this.range.push(this.selectedDate);
+      this.range.push(obj.date);
 
       if(this.range.length == 2){          
-        if(this.range[0].isAfter(this.selectedDate)){
+        if(this.range[0].isAfter(obj.date)){
           this.range.reverse();
         }
       }
-    } 
-
-
+    }
 
 
 
 
     /*
 
-    if(this.range[0] && this.range[0].isSame(obj.date, 'day')){
-      obj.isRangeStart = true;      
-    }
+
 
 
     for(let i = 0; i < this.gridArr.length; i++){
@@ -176,9 +190,7 @@ export class DatepickerComponent implements OnInit {
     /*    
     
 
-    if(this.range[1] && this.range[1].isSame(obj.date, 'day')){
-      obj.isRangeEnd = true;  
-    }        
+      
 
     for(let i = 0; i < this.gridArr.length; i++){
 
@@ -201,6 +213,7 @@ export class DatepickerComponent implements OnInit {
   selectDay(day: any){
     if(day.available){                   
       this.isRange(day);
+      this.updateRange();
     }
   }
 }
