@@ -20,7 +20,7 @@ export class DatepickerComponent implements OnInit {
   /* CONFIG */
   conf = {
     'localeString': 'es',
-    'showItems': 1,
+    'showItems': 3,
     'showSlides': false
   };
 
@@ -113,6 +113,8 @@ export class DatepickerComponent implements OnInit {
         this.gridArr[j]['days'].push(obj);
       }
     }     
+
+    this.updateRange();
   }
 
   isAvailable(dateToCheck): boolean{
