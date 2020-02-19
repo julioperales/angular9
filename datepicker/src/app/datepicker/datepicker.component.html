@@ -1,50 +1,60 @@
 <div class="calendar-wrapper">
 
-<div class="calendar" *ngFor="let month of gridArr" >
-    <div class="calendar-nav">             
-        
-        <div class="calendar-nav-previous-month" *ngIf="conf.showItems == 1">
-            <button class="button is-text" (click)="changeNavMonth(-1)" [disabled]="!canChangeNavMonth(-1)">
+    <div class="calendar" *ngFor="let month of gridArr">
+        <div class="calendar-nav">
+
+            <div class="calendar-nav-previous-month" *ngIf="conf.showItems == 1">
+                <button class="button is-text" (click)="changeNavMonth(-1)" [disabled]="!canChangeNavMonth(-1)">
                 <span class="icon-circle-left"></span>
             </button>
-        </div>
-        <div>{{month.date.format('MMMM YYYY')|titlecase}}</div>
-        <div class="calendar-nav-next-month" *ngIf="conf.showItems == 1">
-            <button class="button is-text" (click)="changeNavMonth(1)" [disabled]="!canChangeNavMonth(1)">
+            </div>
+            <div>{{month.date.format('MMMM YYYY')|titlecase}}</div>
+            <div class="calendar-nav-next-month" *ngIf="conf.showItems == 1">
+                <button class="button is-text" (click)="changeNavMonth(1)" [disabled]="!canChangeNavMonth(1)">
                 <span class="icon-circle-right"></span>
             </button>
-        </div>
-    </div>
-
-
-    <div class="calendar-container">
-        <div class="calendar-header">
-            <div class="calendar-date" *ngFor="let day of weekDaysHeaderArr">
-                {{day|titlecase|slice:0:3 }}
-            </div>
-        </div>
-        <div class="calendar-body">
-            <div *ngFor="let day of month.days" class="calendar-date" [class.is-disabled]="!day.available" [class.is-active]="day.isRangeStart || day.isRangeEnd" [class.calendar-range-start]="day.isRangeStart && range[1]" [class.calendar-range-end]="day.isRangeEnd"
-                [class.calendar-range]="day.isRange">
-
-                <button *ngIf="day.value !== 0" class="date-item" (click)="selectDay(day)">{{day.value}}</button>
-                <button *ngIf="day.value === 0" class="date-item"></button>                
             </div>
         </div>
 
-        
 
-        <div class="calendar-footer">
-            <button class="calendar-footer-today button is-small is-text" *ngIf="conf.showItems == 1" (click)="selectToday()">Today</button>
-            <button class="calendar-footer-clear button is-small is-text" *ngIf="conf.showItems == 1" (click)="clearDays()">Clear</button>            
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <div class="calendar-date" *ngFor="let day of weekDaysHeaderArr">
+                    {{day|titlecase|slice:0:3 }}
+                </div>
+            </div>
+            <div class="calendar-body">
+                <div *ngFor="let day of month.days" class="calendar-date" [class.is-disabled]="!day.available" [class.is-active]="day.isRangeStart || day.isRangeEnd || day.isSingle" [class.calendar-range-start]="day.isRangeStart && range[1]" [class.calendar-range-end]="day.isRangeEnd"
+                    [class.calendar-range]="day.isRange">
+
+                    <button *ngIf="day.value !== 0" class="date-item" (click)="selectDay(day)">{{day.value}}</button>
+                    <button *ngIf="day.value === 0" class="date-item"></button>
+                </div>
+            </div>
+
+
+
+            <div class="calendar-footer">
+                <button class="calendar-footer-today button is-small is-text" *ngIf="conf.showItems == 1" (click)="selectToday()">Today</button>
+                <button class="calendar-footer-clear button is-small is-text" *ngIf="conf.showItems == 1" (click)="clearDays()">Clear</button>
+            </div>
         </div>
+
+
     </div>
 
-    
+
+    <div class="options">
+        <label>
+            <span *ngIf="petitionType == 'range'">Pedir periodo</span>
+            <span *ngIf="petitionType == 'single'">Pedir días individuales</span>
+            <input type="checkbox" [checked]="petitionType == 'range'" (change)="petitionTypeToggle()" />
+        </label>
+
+    </div>
+
 </div>
 
-
-
-</div>
-
-{{this.selectedDates|json}}
+<br/> RANGOS {{this.selectedRangeDates|json}}
+<br/>
+<br/> DIAS {{this.selectedSingleDates|json}}

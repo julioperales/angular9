@@ -16,12 +16,15 @@ export class DatepickerComponent implements OnInit {
   gridArr: Array<any> = [];
   selectedDate: any;
   selectedDates : Array<any> = [];
+  selectedSingleDates : Array<any> = [];
+  selectedRangeDates : Array<any> = [];
   range: Array<any> = [];
+  petitionType: any;
 
   /* CONFIG */
   conf = {
     'localeString': 'es',
-    'showItems': 3,
+    'showItems': 3 ,
     'showSlides': false
   };
 
@@ -30,10 +33,12 @@ export class DatepickerComponent implements OnInit {
   }
 
   ngOnInit(): void {  
+    this.petitionType = 'range';
     moment.locale(this.conf.localeString);                  
     this.navDate = moment();
     this.weekDaysHeaderArr = moment.weekdays(true);    
     this.makeGrid();    
+
   }
 
   selectToday(){
@@ -51,6 +56,9 @@ export class DatepickerComponent implements OnInit {
   clearDays(){
     this.range = new Array();
     this.selectedDates = new Array();
+    this.selectedSingleDates = new Array();
+    this.selectedRangeDates = new Array();
+    
     this.selectedDate = null;
     this.makeGrid();
   }
@@ -129,7 +137,7 @@ export class DatepickerComponent implements OnInit {
 
   updateRange(){    
 
-    this.selectedDates = new Array();
+    this.selectedRangeDates = new Array();
     for(let i= 0; i< this.gridArr.length;  i++){       
 
       for(let j= 0; j< this.gridArr[i].days.length; j++){
@@ -142,12 +150,12 @@ export class DatepickerComponent implements OnInit {
 
         if(this.range[0] && this.range[0].isSame(obj.date, 'day')){
           obj.isRangeStart = true;      
-          this.setSelectedDates(obj.date);
+          this.setSelectedDates(obj.date, this.selectedRangeDates);
         }
     
         if(this.range[1] && this.range[1].isSame(obj.date, 'day')){
           obj.isRangeEnd = true;  
-          this.setSelectedDates(obj.date);
+          this.setSelectedDates(obj.date, this.selectedRangeDates);
         }  
 
         if(this.range[0] && this.range[1]){
@@ -155,7 +163,12 @@ export class DatepickerComponent implements OnInit {
             obj.isRange = true;
 
             if(obj.available){
-              this.setSelectedDates(obj.date);      
+              this.setSelectedDates(obj.date, this.selectedRangeDates);      
+            }
+
+            if(obj.isSingle){
+              obj.isSingle = false;
+              this.unsetSelectedDates(obj.date, this.selectedSingleDates);
             }
           }          
         }
@@ -163,8 +176,16 @@ export class DatepickerComponent implements OnInit {
     }    
   }
 
-  setSelectedDates(date){
-    if (this.selectedDates.includes(date) === false) this.selectedDates.push(date); 
+  setSelectedDates(date, data){
+    if (data.includes(date) === false) data.push(date); 
+  }
+
+  unsetSelectedDates(date, data){ 
+    for(let i = 0; i< data.length; i++){
+      if(date.isSame(data[i],'day')){
+        data.splice(i, 1); 
+      }
+    }     
   }
 
   isRange(obj){    
@@ -196,9 +217,37 @@ export class DatepickerComponent implements OnInit {
 
   selectDay(day: any){
     if(day.available){   
-      this.selectedDate = day.date;                
-      this.isRange(day);
-      this.updateRange();
+      this.selectedDate = day.date;       
+      
+      if(this.petitionType == 'range'){
+        this.isRange(day);
+        this.updateRange();
+      }
+      else{
+        if(!(day.isRange || day.isRangeEnd || day.isRangeStart  )){
+          day.isSingle = !day.isSingle;
+
+          if(day.isSingle){
+            this.setSelectedDates(day.date, this.selectedSingleDates);            
+          }else{
+            this.unsetSelectedDates(day.date, this.selectedSingleDates);
+          }
+        }
+          
+      }
+      
     }
   }
+
+  petitionTypeToggle(){
+    if(this.petitionType == 'single')
+      {
+        this.petitionType = 'range';
+      }
+      else{
+        this.petitionType = 'single';
+      }
+    
+  }
+
 }
