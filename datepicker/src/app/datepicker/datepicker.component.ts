@@ -15,6 +15,7 @@ export class DatepickerComponent implements OnInit {
   weekDaysHeaderArr: Array<string> = [];
   gridArr: Array<any> = [];
   selectedDate: any;
+  selectedDates : Array<any> = [];
   range: Array<any> = [];
 
   /* CONFIG */
@@ -49,6 +50,8 @@ export class DatepickerComponent implements OnInit {
 
   clearDays(){
     this.range = new Array();
+    this.selectedDates = new Array();
+    this.selectedDate = null;
     this.makeGrid();
   }
 
@@ -64,12 +67,10 @@ export class DatepickerComponent implements OnInit {
   makeGrid(){
     this.gridArr = [];
     
-
     for(let j = 0; j< this.conf.showItems; j++){
       let auxDate = moment(this.navDate);
       auxDate.add(j, 'months');
       
-
       let firstDayDate = moment(auxDate).startOf('month');
       let initialEmptyCells = firstDayDate.weekday();
       let lastDayDate = moment(auxDate).endOf('month');
@@ -127,6 +128,8 @@ export class DatepickerComponent implements OnInit {
   }
 
   updateRange(){    
+
+    this.selectedDates = new Array();
     for(let i= 0; i< this.gridArr.length;  i++){       
 
       for(let j= 0; j< this.gridArr[i].days.length; j++){
@@ -134,24 +137,34 @@ export class DatepickerComponent implements OnInit {
         let obj = this.gridArr[i].days[j];
         obj.isRangeStart = false;
         obj.isRangeEnd = false;
-        obj.isRange = false;
+        obj.isRange = false;        
+
 
         if(this.range[0] && this.range[0].isSame(obj.date, 'day')){
           obj.isRangeStart = true;      
+          this.setSelectedDates(obj.date);
         }
     
         if(this.range[1] && this.range[1].isSame(obj.date, 'day')){
           obj.isRangeEnd = true;  
+          this.setSelectedDates(obj.date);
         }  
 
         if(this.range[0] && this.range[1]){
-          if(obj.date.isBetween(this.range[0], this.range[1], 'days')){
+          if(obj.date.isBetween(this.range[0], this.range[1], 'days', '()')){
             obj.isRange = true;
-          }
-          
+
+            if(obj.available){
+              this.setSelectedDates(obj.date);      
+            }
+          }          
         }
       }
-    }
+    }    
+  }
+
+  setSelectedDates(date){
+    if (this.selectedDates.includes(date) === false) this.selectedDates.push(date); 
   }
 
   isRange(obj){    
@@ -174,37 +187,6 @@ export class DatepickerComponent implements OnInit {
       }
     }
 
-
-
-
-    /*
-
-
-
-
-    for(let i = 0; i < this.gridArr.length; i++){
-      for(let j= 0; j< this.gridArr[i].length; j++){
-          console.log('aqui', this.gridArr[i][j]);
-      }
-    }
-
-
-    /*    
-    
-
-      
-
-    for(let i = 0; i < this.gridArr.length; i++){
-
-      for(let j= 0; j< this.gridArr[i]; j++){
-        this.gridArr[i][j].isRange = false;     
-
-        if(this.range[1] && this.gridArr[i][j].date.isBetween(this.range[0], this.range[1])){
-          this.gridArr[i][j].isRange = true;        
-        }
-      }
-      
-    }*/
   }
 
   dateFromNum(num: number, referenceDate: any): any{
@@ -213,7 +195,8 @@ export class DatepickerComponent implements OnInit {
   }
 
   selectDay(day: any){
-    if(day.available){                   
+    if(day.available){   
+      this.selectedDate = day.date;                
       this.isRange(day);
       this.updateRange();
     }
