@@ -238,19 +238,13 @@ export class DatepickerComponent implements OnInit {
     for(let i= 0; i<this.currentRangeIndex; i++){
       let startDateOld = this.range[i][0];
       let endDateOld = this.range[i][1]?this.range[i][1]:undefined;   
-    
-      console.log("HOLA", startDate, endDate, delIndex, this.currentRangeIndex);
-      console.log(startDateOld, startDateOld.isBetween(startDate, endDate, '[]'));
+
 
       if(startDateOld.isBetween(startDate, endDate, 'days', '[]')){
-        console.log("A");        
         if(endDateOld){          
-            console.log("B");        
             if(endDateOld.isBetween(startDate, endDate, 'days', '[]')){
               delIndex = i;          
-              console.log("C");            
-            }else{
-              console.log("D  ");            
+            }else{              
               delIndex = i;
               this.range[this.currentRangeIndex][1] = endDateOld;
             }
@@ -258,6 +252,16 @@ export class DatepickerComponent implements OnInit {
           delIndex = i;          
         }
       }
+
+      if(startDate.isBetween(startDateOld, endDateOld, 'days', '[]')){
+
+        if(endDate.isSameOrAfter(endDateOld, 'days')){
+          delIndex = i;
+          this.range[this.currentRangeIndex][0] = startDateOld;
+        }
+        
+      }
+
       
     }
 
@@ -304,7 +308,15 @@ export class DatepickerComponent implements OnInit {
       }
       else{
         this.petitionType = 'single';
+
+        if(this.getCurrentRangeLength()){
+          this.addNewRange();
+        }
       }    
+  }
+
+  getCurrentRangeLength(){
+    return this.range[this.currentRangeIndex].length;
   }
 
   addNewRange(){
