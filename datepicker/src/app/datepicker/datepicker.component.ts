@@ -92,6 +92,11 @@ export class DatepickerComponent implements OnInit {
     return clonedDate.isBetween(minDate, maxDate);
   }
 
+  showOnSingleCalendar(){
+    return conf.showItems == 1;
+  }
+  
+
   /*
     UI print calendar 
   */

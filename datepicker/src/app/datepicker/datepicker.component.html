@@ -3,13 +3,13 @@
     <div class="calendar" *ngFor="let month of gridArr">
         <div class="calendar-nav">
 
-            <div class="calendar-nav-previous-month" *ngIf="conf.showItems == 1">
+            <div class="calendar-nav-previous-month" *ngIf="showOnSingleCalendar()">
                 <button class="button is-text" (click)="changeNavMonth(-1)" [disabled]="!canChangeNavMonth(-1)">
                 <span class="icon-circle-left"></span>
             </button>
             </div>
             <div>{{month.date.format('MMMM YYYY')|titlecase}}</div>
-            <div class="calendar-nav-next-month" *ngIf="conf.showItems == 1">
+            <div class="calendar-nav-next-month" *ngIf="showOnSingleCalendar()">
                 <button class="button is-text" (click)="changeNavMonth(1)" [disabled]="!canChangeNavMonth(1)">
                 <span class="icon-circle-right"></span>
             </button>
@@ -35,8 +35,8 @@
 
 
             <div class="calendar-footer">
-                <button class="calendar-footer-today button is-small is-text" *ngIf="conf.showItems == 1" (click)="selectToday()">Today</button>
-                <button class="calendar-footer-clear button is-small is-text" *ngIf="conf.showItems == 1" (click)="clearDays()">Clear</button>
+                <button class="calendar-footer-today button is-small is-text" *ngIf="showOnSingleCalendar()" (click)="selectToday()">Today</button>
+                <button class="calendar-footer-clear button is-small is-text" *ngIf="showOnSingleCalendar()" (click)="clearDays()">Clear</button>
             </div>
         </div>
 
