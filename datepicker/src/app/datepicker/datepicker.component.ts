@@ -93,7 +93,7 @@ export class DatepickerComponent implements OnInit {
   }
 
   showOnSingleCalendar(){
-    return conf.showItems == 1;
+    return this.conf.showItems == 1;
   }
   
 
