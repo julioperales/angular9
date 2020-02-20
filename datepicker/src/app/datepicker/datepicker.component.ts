@@ -45,26 +45,23 @@ export class DatepickerComponent implements OnInit {
     this.petitionType = 'range';    
     this.range[this.currentRangeIndex] = new Array();
     moment.locale(this.conf.localeString);                  
-    this.navDate = moment();
+    this.navDate = moment.utc();
     this.weekDaysHeaderArr = moment.weekdays(true);    
     this.makeGrid();    
   }
 
+  /* Date in header */
   selectToday(){
-    this.navDate = moment();
+    this.navDate = moment.utc();
     this.makeGrid();
   }
 
-  changeNavMonth(num: number){    
-    if(this.canChangeNavMonth(num)){
-      this.navDate.add(num, 'month');
-      this.makeGrid();
-    }
-  }
 
+  /* Clear all selected days */
   clearDays(){
     this.range = new Array();
     this.currentRangeIndex = 0;
+    this.range[this.currentRangeIndex] = new Array();
     this.selectedDates = new Array();
     this.selectedSingleDates = new Array();
     this.selectedRangeDates = new Array();
@@ -73,25 +70,41 @@ export class DatepickerComponent implements OnInit {
     this.makeGrid();
   }
 
+  /* Nav Between Months */
+  changeNavMonth(num: number){    
+    if(this.canChangeNavMonth(num)){
+      this.navDate.add(num, 'month');
+      this.makeGrid();
+    }
+  }
+
+  /* 
+    Limit calendar dates to ->
+    PREV: -1 month
+    NEXT: 1 year
+  */
   canChangeNavMonth(num: number){
-    const clonedDate = moment(this.navDate);
+    const clonedDate = moment.utc(this.navDate);
     clonedDate.add(num, 'month');
-    const minDate = moment().add(-1, 'month');
-    const maxDate = moment().add(1, 'year');
+    const minDate = moment.utc().add(-1, 'month');
+    const maxDate = moment.utc().add(1, 'year');
 
     return clonedDate.isBetween(minDate, maxDate);
   }
 
+  /*
+    UI print calendar 
+  */
   makeGrid(){
     this.gridArr = [];
     
     for(let j = 0; j< this.conf.showItems; j++){
-      let auxDate = moment(this.navDate);
+      let auxDate = moment.utc(this.navDate);
       auxDate.add(j, 'months');
       
-      let firstDayDate = moment(auxDate).startOf('month');
+      let firstDayDate = moment.utc(auxDate).startOf('month');
       let initialEmptyCells = firstDayDate.weekday();
-      let lastDayDate = moment(auxDate).endOf('month');
+      let lastDayDate = moment.utc(auxDate).endOf('month');
       let lastEmptyCells = 6 - lastDayDate.weekday();
       let daysInMonth = auxDate.daysInMonth();
       let arrayLength = initialEmptyCells + lastEmptyCells + daysInMonth;
@@ -136,8 +149,7 @@ export class DatepickerComponent implements OnInit {
     this.updateRange();
   }
 
-  isAvailable(dateToCheck): boolean{
-        
+  isAvailable(dateToCheck): boolean{        
     //Weekend
     if(dateToCheck.weekday() > 4){
       return false;
@@ -145,55 +157,7 @@ export class DatepickerComponent implements OnInit {
     return true;
   }
 
-  updateRange(){    
-    
-    this.selectedRangeDates = new Array();
-
-    for(let i= 0; i< this.gridArr.length;  i++){       
-
-      for(let j= 0; j< this.gridArr[i].days.length; j++){
-
-        let obj = this.gridArr[i].days[j];
-        obj.isRangeStart = false;
-        obj.isRangeEnd = false;
-        obj.isRange = false;     
-        obj.rangeIndex = -1;   
-
-
-        for(let k=0; k< this.range.length; k++){
-          if(this.range[k][0] && this.range[k][0].isSame(obj.date, 'day')){
-            obj.isRangeStart = true;      
-            this.setSelectedDates(obj.date, this.selectedRangeDates);
-            obj.rangeIndex = k;
-          }
-
-          if(this.range[k][1] && this.range[k][1].isSame(obj.date, 'day')){
-            obj.isRangeEnd = true;  
-            this.setSelectedDates(obj.date, this.selectedRangeDates);
-            obj.rangeIndex = k;
-          }
-
-          if(this.range[k][0] && this.range[k][1]){
-            if(obj.date.isBetween(this.range[k][0], this.range[k][1], 'days', '()')){
-              obj.isRange = true;
-              obj.rangeIndex = k;
-  
-              if(obj.available){
-                this.setSelectedDates(obj.date, this.selectedRangeDates);      
-              }
-  
-              if(obj.isSingle){
-                obj.isSingle = false;
-                this.unsetSelectedDates(obj.date, this.selectedSingleDates);
-              }
-            }          
-          }
-        }
-
-      }
-    }    
-  }
-
+  /* OPs on presentation arrays*/
   setSelectedDates(date, data){
     if (data.includes(date) === false) data.push(date); 
   }
@@ -206,77 +170,7 @@ export class DatepickerComponent implements OnInit {
     }     
   }
 
-  isRange(obj){    
-    obj.isRangeStart = false;
-    obj.isRangeEnd = false;
-    obj.isRange = false;    
-   
-    if(this.range[this.currentRangeIndex].length > 1){
-      this.range[this.currentRangeIndex] = new Array();
-      this.range[this.currentRangeIndex].push(obj.date);        
-    }else{
-      this.range[this.currentRangeIndex].push(obj.date);     
-            
-      if(this.range[this.currentRangeIndex].length == 2){          
-        if(this.range[this.currentRangeIndex][0].isAfter(obj.date)){
-          this.range[this.currentRangeIndex].reverse();          
-        }
-        this.checkRanges();
-      }
-    }
-  }
-
-  checkRanges(){    
-    
-    const startDate = this.range[this.currentRangeIndex][0];
-    const endDate = this.range[this.currentRangeIndex][1];
-    let delIndex = -1;
-
-
-    
-
-    for(let i= 0; i<this.currentRangeIndex; i++){
-      let startDateOld = this.range[i][0];
-      let endDateOld = this.range[i][1]?this.range[i][1]:undefined;   
-
-
-      if(startDateOld.isBetween(startDate, endDate, 'days', '[]')){
-        if(endDateOld){          
-            if(endDateOld.isBetween(startDate, endDate, 'days', '[]')){
-              delIndex = i;          
-            }else{              
-              delIndex = i;
-              this.range[this.currentRangeIndex][1] = endDateOld;
-            }
-        }else{
-          delIndex = i;          
-        }
-      }
-
-      if(startDate.isBetween(startDateOld, endDateOld, 'days', '[]')){
-
-        if(endDate.isSameOrAfter(endDateOld, 'days')){
-          delIndex = i;
-          this.range[this.currentRangeIndex][0] = startDateOld;
-        }
-        
-      }
-
-      
-    }
-
-    if(delIndex !== -1){
-      this.range.splice(delIndex, 1); 
-      this.currentRangeIndex--;
-    }
-
-  }
-
-  dateFromNum(num: number, referenceDate: any): any{
-    let returnDate = moment(referenceDate);
-    return returnDate.date(num);
-  }
-
+  /* Every click on days */
   selectDay(day: any){
     if(day.available){   
       this.selectedDate = day.date;       
@@ -301,6 +195,142 @@ export class DatepickerComponent implements OnInit {
     }
   }
 
+
+  /* RANGES */
+  updateRange(){        
+    this.selectedRangeDates = new Array();
+
+    for(let i= 0; i< this.gridArr.length;  i++){       
+
+      for(let j= 0; j< this.gridArr[i].days.length; j++){
+
+        let obj = this.gridArr[i].days[j];
+        obj.isRangeStart = false;
+        obj.isRangeEnd = false;
+        obj.isRange = false;     
+        obj.rangeIndex = -1;   
+        
+        for(let k=0; k< this.range.length; k++){  
+          //Start Period        
+          if(this.range[k][0] && this.range[k][0].isSame(obj.date, 'day')){
+            obj.isRangeStart = true;      
+            this.setSelectedDates(obj.date, this.selectedRangeDates);
+            obj.rangeIndex = k;
+          }
+
+          //End Period
+          if(this.range[k][1] && this.range[k][1].isSame(obj.date, 'day')){
+            obj.isRangeEnd = true;  
+            this.setSelectedDates(obj.date, this.selectedRangeDates);
+            obj.rangeIndex = k;
+          }
+
+          //Dates between end-points
+          if(this.range[k][0] && this.range[k][1]){
+            if(obj.date.isBetween(this.range[k][0], this.range[k][1], 'days', '()')){
+              obj.isRange = true;
+              obj.rangeIndex = k;
+  
+              if(obj.available){
+                this.setSelectedDates(obj.date, this.selectedRangeDates);      
+              }
+  
+              if(obj.isSingle){
+                obj.isSingle = false;
+                this.unsetSelectedDates(obj.date, this.selectedSingleDates);
+              }
+            }          
+          }
+        }
+
+      }
+    }    
+  }
+
+  /*  
+    Range has 2 end-points
+  */
+  isRange(obj){    
+    obj.isRangeStart = false;
+    obj.isRangeEnd = false;
+    obj.isRange = false;    
+   
+    if(this.range[this.currentRangeIndex].length > 1){
+      this.range[this.currentRangeIndex] = new Array();
+      this.range[this.currentRangeIndex].push(obj.date);        
+    }else{
+      this.range[this.currentRangeIndex].push(obj.date);     
+            
+      if(this.range[this.currentRangeIndex].length == 2){          
+        if(this.range[this.currentRangeIndex][0].isAfter(obj.date)){
+          this.range[this.currentRangeIndex].reverse();          
+        }
+        this.checkRanges();
+      }
+    }
+  }
+
+  /*
+    mix ranges on overlaps
+  */
+  checkRanges(){    
+    
+    const startDate = this.range[this.currentRangeIndex][0];
+    const endDate = this.range[this.currentRangeIndex][1];
+    let delIndex = -1;
+   
+    for(let i= 0; i<this.currentRangeIndex; i++){
+      let startDateOld = this.range[i][0];
+      let endDateOld = this.range[i][1]?this.range[i][1]:undefined;   
+
+      //Overlap new range selection in beginning
+      if(startDateOld.isBetween(startDate, endDate, 'days', '[]')){
+        if(endDateOld){          
+            delIndex = i;          
+            if(!endDateOld.isBetween(startDate, endDate, 'days', '[]')){                                        
+              this.range[this.currentRangeIndex][1] = endDateOld;
+            }
+        }else{
+          delIndex = i;          
+        }
+      }
+
+      //Overlap new range selection in ending
+      if(startDate.isBetween(startDateOld, endDateOld, 'days', '[]')){
+
+        if(endDate.isSameOrAfter(endDateOld, 'days')){
+          delIndex = i;
+          this.range[this.currentRangeIndex][0] = startDateOld;
+        }
+        
+      }      
+    }
+
+    if(delIndex !== -1){
+      deleteRange(delIndex)
+    }
+
+  }
+
+  /* Check if a range item has values */
+  getCurrentRangeLength(){
+    return this.range[this.currentRangeIndex].length;
+  }
+
+  /* Prepare next range item */
+  addNewRange(){
+    let newRange = new Array();
+    this.range.push(newRange);    
+    this.currentRangeIndex++;
+  }
+
+  /* Delete Range item */
+  deleteRange(delIndex){
+    this.range.splice(delIndex, 1); 
+    this.currentRangeIndex--;
+  }
+
+  /* Change petition types : single days OR period days */
   petitionTypeToggle(){
     if(this.petitionType == 'single')
       {
@@ -309,22 +339,14 @@ export class DatepickerComponent implements OnInit {
       else{
         this.petitionType = 'single';
 
+        /* Consolidate period on days selected*/
         if(this.getCurrentRangeLength()){
           this.addNewRange();
         }
       }    
   }
 
-  getCurrentRangeLength(){
-    return this.range[this.currentRangeIndex].length;
-  }
-
-  addNewRange(){
-    let newRange = new Array();
-    this.range.push(newRange);    
-    this.currentRangeIndex++;
-  }
-
+  /* Check if a petition is range */
   isChecked(){
     return this.petitionType === 'range';
   }

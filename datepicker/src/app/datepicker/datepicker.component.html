@@ -46,8 +46,8 @@
 
     <div class="options">
         <label>
-            <span *ngIf="petitionType == 'range'">Pidiendo periodo</span>
-            <span *ngIf="petitionType == 'single'">Pidiendo días individuales</span>                                        
+            <span *ngIf="petitionType == 'range'">Pidiendo periodo / Cambiar a individuales</span>
+            <span *ngIf="petitionType == 'single'">Pidiendo días individuales / Cambiar a periodos</span>                                        
             <input type="checkbox" [checked]="isChecked()" (input)="petitionTypeToggle()" />            
         </label>
         <button type="button" (click)="addNewRange()" *ngIf="range[range.length-1].length == 2">Añadir Rango</button>
