@@ -19,7 +19,16 @@ export class DatepickerComponent implements OnInit {
   selectedSingleDates : Array<any> = [];
   selectedRangeDates : Array<any> = [];
   range: Array<any> = [];
-  petitionType: any;
+  _petitionType: any;
+
+  get petitionType() {
+    return this._petitionType;
+  }
+
+  set petitionType(value:string){
+    console.log("Asignando petitionType", value);
+    this._petitionType = value;
+  }
 
   /* CONFIG */
   conf = {
@@ -138,10 +147,7 @@ export class DatepickerComponent implements OnInit {
 
   updateRange(){    
 
-    const currentRangeIndex = this.range.length?this.range.length -1:0 ;
-
-    console.log('INDEX', currentRangeIndex);
-
+    const currentRangeIndex = this.range.length?this.range.length -1:0 ;    
     this.selectedRangeDates = new Array();
 
     for(let i= 0; i< this.gridArr.length;  i++){       
@@ -153,35 +159,38 @@ export class DatepickerComponent implements OnInit {
         obj.isRangeEnd = false;
         obj.isRange = false;     
         obj.rangeIndex = -1;   
-        
 
-        if(this.range[currentRangeIndex][0] && this.range[currentRangeIndex][0].isSame(obj.date, 'day')){
-          obj.isRangeStart = true;      
-          this.setSelectedDates(obj.date, this.selectedRangeDates);
-          obj.rangeIndex = currentRangeIndex;
+
+        for(let k=0; k< this.range.length; k++){
+          if(this.range[k][0] && this.range[k][0].isSame(obj.date, 'day')){
+            obj.isRangeStart = true;      
+            this.setSelectedDates(obj.date, this.selectedRangeDates);
+            obj.rangeIndex = k;
+          }
+
+          if(this.range[k][1] && this.range[k][1].isSame(obj.date, 'day')){
+            obj.isRangeEnd = true;  
+            this.setSelectedDates(obj.date, this.selectedRangeDates);
+            obj.rangeIndex = k;
+          }
+
+          if(this.range[k][0] && this.range[k][1]){
+            if(obj.date.isBetween(this.range[k][0], this.range[k][1], 'days', '()')){
+              obj.isRange = true;
+              obj.rangeIndex = k;
+  
+              if(obj.available){
+                this.setSelectedDates(obj.date, this.selectedRangeDates);      
+              }
+  
+              if(obj.isSingle){
+                obj.isSingle = false;
+                this.unsetSelectedDates(obj.date, this.selectedSingleDates);
+              }
+            }          
+          }
         }
-    
-        if(this.range[currentRangeIndex][1] && this.range[currentRangeIndex][1].isSame(obj.date, 'day')){
-          obj.isRangeEnd = true;  
-          this.setSelectedDates(obj.date, this.selectedRangeDates);
-          obj.rangeIndex = currentRangeIndex;
-        }  
 
-        if(this.range[currentRangeIndex][0] && this.range[currentRangeIndex][1]){
-          if(obj.date.isBetween(this.range[currentRangeIndex][0], this.range[currentRangeIndex][1], 'days', '()')){
-            obj.isRange = true;
-            obj.rangeIndex = currentRangeIndex;
-
-            if(obj.available){
-              this.setSelectedDates(obj.date, this.selectedRangeDates);      
-            }
-
-            if(obj.isSingle){
-              obj.isSingle = false;
-              this.unsetSelectedDates(obj.date, this.selectedSingleDates);
-            }
-          }          
-        }
       }
     }    
   }
@@ -203,11 +212,13 @@ export class DatepickerComponent implements OnInit {
     obj.isRangeEnd = false;
     obj.isRange = false;
     const currentRangeIndex = this.range.length?this.range.length -1:0 ;
+
+
+    console.log(currentRangeIndex, this.range);
    
     if(this.range[currentRangeIndex].length > 1){
       this.range[currentRangeIndex] = new Array();
-      this.range[currentRangeIndex].push(obj.date);  
-      
+      this.range[currentRangeIndex].push(obj.date);        
     }else{
       this.range[currentRangeIndex].push(obj.date);      
       if(this.range[currentRangeIndex].length == 2){          
@@ -216,7 +227,6 @@ export class DatepickerComponent implements OnInit {
         }
       }
     }
-
   }
 
   dateFromNum(num: number, referenceDate: any): any{
@@ -255,8 +265,16 @@ export class DatepickerComponent implements OnInit {
       }
       else{
         this.petitionType = 'single';
-      }
-    
+      }    
+  }
+
+  addNewRange(){
+    let newRange = new Array();
+    this.range.push(newRange);    
+  }
+
+  isChecked(){
+    return this.petitionType === 'range';
   }
 
 }

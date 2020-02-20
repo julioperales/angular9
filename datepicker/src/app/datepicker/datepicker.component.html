@@ -47,14 +47,15 @@
     <div class="options">
         <label>
             <span *ngIf="petitionType == 'range'">Pedir periodo</span>
-            <span *ngIf="petitionType == 'single'">Pedir días individuales</span>
-            <input type="checkbox" [checked]="petitionType == 'range'" (change)="petitionTypeToggle()" />
+            <span *ngIf="petitionType == 'single'">Pedir días individuales</span>                                        
+            <input type="checkbox" [checked]="isChecked()" (input)="petitionTypeToggle()" />            
         </label>
+        <button type="button" (click)="addNewRange()" *ngIf="range[range.length-1].length">Añadir Rango</button>
 
     </div>
 
 </div>
-
+{{ petitionType }}
 <br/> RANGOS {{this.selectedRangeDates|json}}
 <br/>
 <br/> DIAS {{this.selectedSingleDates|json}}
