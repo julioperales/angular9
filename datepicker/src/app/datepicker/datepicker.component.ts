@@ -19,14 +19,14 @@ export class DatepickerComponent implements OnInit {
   selectedSingleDates : Array<any> = [];
   selectedRangeDates : Array<any> = [];
   range: Array<any> = [];
+  currentRangeIndex: num = 0;
   _petitionType: any;
 
   get petitionType() {
     return this._petitionType;
   }
 
-  set petitionType(value:string){
-    console.log("Asignando petitionType", value);
+  set petitionType(value:string){    
     this._petitionType = value;
   }
 
@@ -42,13 +42,12 @@ export class DatepickerComponent implements OnInit {
   }
 
   ngOnInit(): void {  
-    this.petitionType = 'range';
-    this.range[0] = new Array();
+    this.petitionType = 'range';    
+    this.range[this.currentRangeIndex] = new Array();
     moment.locale(this.conf.localeString);                  
     this.navDate = moment();
     this.weekDaysHeaderArr = moment.weekdays(true);    
     this.makeGrid();    
-
   }
 
   selectToday(){
@@ -65,6 +64,7 @@ export class DatepickerComponent implements OnInit {
 
   clearDays(){
     this.range = new Array();
+    this.currentRangeIndex = 0;
     this.selectedDates = new Array();
     this.selectedSingleDates = new Array();
     this.selectedRangeDates = new Array();
@@ -146,8 +146,7 @@ export class DatepickerComponent implements OnInit {
   }
 
   updateRange(){    
-
-    const currentRangeIndex = this.range.length?this.range.length -1:0 ;    
+    
     this.selectedRangeDates = new Array();
 
     for(let i= 0; i< this.gridArr.length;  i++){       
@@ -210,23 +209,63 @@ export class DatepickerComponent implements OnInit {
   isRange(obj){    
     obj.isRangeStart = false;
     obj.isRangeEnd = false;
-    obj.isRange = false;
-    const currentRangeIndex = this.range.length?this.range.length -1:0 ;
-
-
-    console.log(currentRangeIndex, this.range);
+    obj.isRange = false;    
    
-    if(this.range[currentRangeIndex].length > 1){
-      this.range[currentRangeIndex] = new Array();
-      this.range[currentRangeIndex].push(obj.date);        
+    if(this.range[this.currentRangeIndex].length > 1){
+      this.range[this.currentRangeIndex] = new Array();
+      this.range[this.currentRangeIndex].push(obj.date);        
     }else{
-      this.range[currentRangeIndex].push(obj.date);      
-      if(this.range[currentRangeIndex].length == 2){          
-        if(this.range[currentRangeIndex][0].isAfter(obj.date)){
-          this.range[currentRangeIndex].reverse();
+      this.range[this.currentRangeIndex].push(obj.date);     
+            
+      if(this.range[this.currentRangeIndex].length == 2){          
+        if(this.range[this.currentRangeIndex][0].isAfter(obj.date)){
+          this.range[this.currentRangeIndex].reverse();          
         }
+        this.checkRanges();
       }
     }
+  }
+
+  checkRanges(){    
+    
+    const startDate = this.range[this.currentRangeIndex][0];
+    const endDate = this.range[this.currentRangeIndex][1];
+    let delIndex = -1;
+
+
+    
+
+    for(let i= 0; i<this.currentRangeIndex; i++){
+      let startDateOld = this.range[i][0];
+      let endDateOld = this.range[i][1]?this.range[i][1]:undefined;   
+    
+      console.log("HOLA", startDate, endDate, delIndex, this.currentRangeIndex);
+      console.log(startDateOld, startDateOld.isBetween(startDate, endDate, '[]'));
+
+      if(startDateOld.isBetween(startDate, endDate, 'days', '[]')){
+        console.log("A");        
+        if(endDateOld){          
+            console.log("B");        
+            if(endDateOld.isBetween(startDate, endDate, 'days', '[]')){
+              delIndex = i;          
+              console.log("C");            
+            }else{
+              console.log("D  ");            
+              delIndex = i;
+              this.range[this.currentRangeIndex][1] = endDateOld;
+            }
+        }else{
+          delIndex = i;          
+        }
+      }
+      
+    }
+
+    if(delIndex !== -1){
+      this.range.splice(delIndex, 1); 
+      this.currentRangeIndex--;
+    }
+
   }
 
   dateFromNum(num: number, referenceDate: any): any{
@@ -271,6 +310,7 @@ export class DatepickerComponent implements OnInit {
   addNewRange(){
     let newRange = new Array();
     this.range.push(newRange);    
+    this.currentRangeIndex++;
   }
 
   isChecked(){
