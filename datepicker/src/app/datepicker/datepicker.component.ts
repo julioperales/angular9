@@ -34,6 +34,7 @@ export class DatepickerComponent implements OnInit {
 
   ngOnInit(): void {  
     this.petitionType = 'range';
+    this.range[0] = new Array();
     moment.locale(this.conf.localeString);                  
     this.navDate = moment();
     this.weekDaysHeaderArr = moment.weekdays(true);    
@@ -137,7 +138,12 @@ export class DatepickerComponent implements OnInit {
 
   updateRange(){    
 
+    const currentRangeIndex = this.range.length?this.range.length -1:0 ;
+
+    console.log('INDEX', currentRangeIndex);
+
     this.selectedRangeDates = new Array();
+
     for(let i= 0; i< this.gridArr.length;  i++){       
 
       for(let j= 0; j< this.gridArr[i].days.length; j++){
@@ -145,22 +151,26 @@ export class DatepickerComponent implements OnInit {
         let obj = this.gridArr[i].days[j];
         obj.isRangeStart = false;
         obj.isRangeEnd = false;
-        obj.isRange = false;        
+        obj.isRange = false;     
+        obj.rangeIndex = -1;   
+        
 
-
-        if(this.range[0] && this.range[0].isSame(obj.date, 'day')){
+        if(this.range[currentRangeIndex][0] && this.range[currentRangeIndex][0].isSame(obj.date, 'day')){
           obj.isRangeStart = true;      
           this.setSelectedDates(obj.date, this.selectedRangeDates);
+          obj.rangeIndex = currentRangeIndex;
         }
     
-        if(this.range[1] && this.range[1].isSame(obj.date, 'day')){
+        if(this.range[currentRangeIndex][1] && this.range[currentRangeIndex][1].isSame(obj.date, 'day')){
           obj.isRangeEnd = true;  
           this.setSelectedDates(obj.date, this.selectedRangeDates);
+          obj.rangeIndex = currentRangeIndex;
         }  
 
-        if(this.range[0] && this.range[1]){
-          if(obj.date.isBetween(this.range[0], this.range[1], 'days', '()')){
+        if(this.range[currentRangeIndex][0] && this.range[currentRangeIndex][1]){
+          if(obj.date.isBetween(this.range[currentRangeIndex][0], this.range[currentRangeIndex][1], 'days', '()')){
             obj.isRange = true;
+            obj.rangeIndex = currentRangeIndex;
 
             if(obj.available){
               this.setSelectedDates(obj.date, this.selectedRangeDates);      
@@ -192,18 +202,17 @@ export class DatepickerComponent implements OnInit {
     obj.isRangeStart = false;
     obj.isRangeEnd = false;
     obj.isRange = false;
-    
+    const currentRangeIndex = this.range.length?this.range.length -1:0 ;
    
-    if(this.range.length > 1){
-      this.range = new Array();
-      this.range.push(obj.date);  
+    if(this.range[currentRangeIndex].length > 1){
+      this.range[currentRangeIndex] = new Array();
+      this.range[currentRangeIndex].push(obj.date);  
       
     }else{
-      this.range.push(obj.date);
-
-      if(this.range.length == 2){          
-        if(this.range[0].isAfter(obj.date)){
-          this.range.reverse();
+      this.range[currentRangeIndex].push(obj.date);      
+      if(this.range[currentRangeIndex].length == 2){          
+        if(this.range[currentRangeIndex][0].isAfter(obj.date)){
+          this.range[currentRangeIndex].reverse();
         }
       }
     }
